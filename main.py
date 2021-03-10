@@ -13,12 +13,12 @@ def main():
     # tmdb_df = read_csv_data(TMDB_PATH)
 
     critics_vs_audience(tomatoes_df)
-    # find_average_runtime_each_genre(tomatoes_df)
+    find_average_runtime_each_genre(tomatoes_df)
 
     # TMDB_MOVIES_PATH = 'tmdb_5000_movies.csv'
     # tmdb_df = read_csv_data(TMDB_MOVIES_PATH)
 
-    # print(join_tables(tomatoes_df, tmdb_df))  
+    # print(join_tables(tomatoes_df, tmdb_df))
     
     
 
@@ -63,13 +63,13 @@ def find_average_runtime_each_genre(raw_data):
     recent_movie['genres'] = recent_movie['genres'].str.split(',')
     recent_movie = recent_movie.explode('genres')
 
-    # step 3: aggregate the genres average runtime
-    recent_movie = recent_movie[['movie_title', 'genres', 'runtime']].groupby(['genres']).mean()
-
+    # step 3: print out the result
+    print(recent_movie.groupby('genres').describe())
+    
     # step 4: plot the figure
     sns.set()
     plt.figure(figsize=(18,12))
-    barplot = sns.barplot(x=recent_movie['runtime'], y=recent_movie.index, palette='magma')
+    barplot = sns.barplot(x='runtime', y='genres', palette='magma', ci=50, data=recent_movie)
     barplot.set_title('Average Movie Duration from 2000 to Present', fontsize=18, weight='bold')
     barplot.set_xlabel('Movie Duration', fontsize=18, weight='bold')
     barplot.set_ylabel('Genres', fontsize=18, weight='bold')
