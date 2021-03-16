@@ -4,6 +4,7 @@ import seaborn as sns
 import cse163_utils
 from recommendation_system import Recommendation_System
 
+
 def main():
     TOMATOES_TEST_PATH = 'tomatoes_test.csv'
     TMDB_TEST_PATH = 'tmdb_test.csv'
@@ -37,12 +38,9 @@ def main():
     rc.recommend('Avatar', 20)
 
 
-
-
-
 def test_critcs_vs_audience(data):
     """
-    test the function "critics_vs_audience" 
+    test the function "critics_vs_audience"
     """
     result = critics_vs_audience(data)
 
@@ -56,9 +54,10 @@ def test_critcs_vs_audience(data):
     cse163_utils.assert_equals(row_data.values[0][1], 50)
     cse163_utils.assert_equals(row_data.values[0][2], 100)
 
+
 def test_find_average_runtime_each_genre(data):
     '''
-    test the function "find_average_runtime_each_genre" 
+    test the function "find_average_runtime_each_genre"
     '''
     result = find_average_runtime_each_genre(data)
 
@@ -88,12 +87,13 @@ def test_popular_genre_by_country(data):
     cse163_utils.assert_equals(row_data.values[0][1], 'Drama')
     cse163_utils.assert_equals(row_data.values[0][2], 100)
 
+
 def test_find_valuable_cast(data):
     '''
     test the function "find_valuable_cast" 
     '''
     result = find_valuable_cast(data)
-    
+
     # test one director (made up)
     row_data = result.query('directors == "Aishwarya Venkatesh"')
     cse163_utils.assert_equals(row_data.values[0][1], 12345)
@@ -101,7 +101,7 @@ def test_find_valuable_cast(data):
     # test another director (made up)
     row_data = result.query('directors == "Dominic Minichillo"')
     cse163_utils.assert_equals(row_data.values[0][1], 100000)
-    
+
 
 def read_data(path):
     if path.split('.')[1] == 'csv':
@@ -122,20 +122,21 @@ def critics_vs_audience(raw_data):
     new_data = new_data.groupby(['genres']).mean()
     new_data = new_data.reset_index()
     sns.set()
-    scatter_plot = sns.relplot(data=new_data, x="tomatometer_rating", 
-                            y="audience_rating", 
-                            kind='scatter', hue='genres', 
-                            s=100, style='genres',
-                            height=10)
-        
+    scatter_plot = sns.relplot(data=new_data, x="tomatometer_rating",
+                               y="audience_rating",
+                               kind='scatter', hue='genres',
+                               s=100, style='genres',
+                               height=10)
+
     plt.title('Genres Critics Average Rating' +
               'vs. Audience Average Rating',
               weight='bold')
     scatter_plot.set(xlabel='Critics Rating', ylabel='Audience Rating')
-    
+
     plt.plot(range(0, 100), range(0, 100), 'black', alpha=0.2)
     plt.savefig('critics_vs_audience.png', bbox_inches='tight')
     return new_data
+
 
 def find_average_runtime_each_genre(raw_data):
     """
@@ -144,34 +145,34 @@ def find_average_runtime_each_genre(raw_data):
     statistical result of average duration of each genre
     in form of DataFrame
     """
-    data = raw_data[['streaming_release_date', 
+    data = raw_data[['streaming_release_date',
                     'genres', 'runtime']]
 
     # step 1: drop out rows with no release date
     data = data.dropna(subset=['streaming_release_date'])
     recent_movie = data[data['streaming_release_date'].
-                        apply(lambda x :int(x.split('-')[0]) >= 2000)]
+                        apply(lambda x:int(x.split('-')[0]) >= 2000)]
     recent_movie = recent_movie.copy()
 
     # step 2: data processing. Convert genres string attribute to a list
     recent_movie['genres'] = recent_movie['genres'].str.split(',')
     recent_movie = recent_movie.explode('genres')
     recent_movie['genres'] = recent_movie['genres'].str.strip()
-    
+
     # step 3: plot the figure
     sns.set()
-    plt.figure(figsize=(18,12))
+    plt.figure(figsize=(18, 12))
     barplot = sns.barplot(x='runtime', y='genres',
                           palette='magma', ci=50,
                           data=recent_movie)
     barplot.set_title('Average Movie Duration from 2000 to Present',
-                                                        fontsize=18,
-                                                        weight='bold')
+                      fontsize=18,
+                      weight='bold')
     barplot.set_xlabel('Movie Duration', fontsize=18, weight='bold')
     barplot.set_ylabel('Genres', fontsize=18, weight='bold')
     plt.savefig('average_runtime_each_genre.png')
 
-    return recent_movie.groupby('genres').describe() 
+    return recent_movie.groupby('genres').describe()
 
 
 def popular_genre_by_country(raw_data):
@@ -183,7 +184,7 @@ def popular_genre_by_country(raw_data):
     each country, with its main genre and its popularity value.
     """
     popular_genre = raw_data[["popularity", 'genres',
-                            'production_countries']]
+                              'production_countries']]
     # The three relevant coulmns. Popularity is a metric calculated by tmdb
     genre_list = []
     country_list = []
@@ -217,8 +218,10 @@ def popular_genre_by_country(raw_data):
                 values_list = list(values)
                 main_country.append(values_list[1])
     # getting main production country for each movie
-    popular_genre= popular_genre.assign(main_genre=pd.Series(main_genre).values)
-    popular_genre = popular_genre.assign(main_country=pd.Series(main_country).values)
+    popular_genre = popular_genre.assign(
+        main_genre=pd.Series(main_genre).values)
+    popular_genre = popular_genre.assign(
+        main_country=pd.Series(main_country).values)
     # adding genre and countries to df as a series
     groupby = popular_genre.groupby(['main_country', 'main_genre'],
                                     as_index=False).popularity.mean().\
@@ -229,7 +232,7 @@ def popular_genre_by_country(raw_data):
     # gets most popular genre for each country
     final_groupby = final_groupby.nlargest(20, ['popularity'])
     plot = sns.barplot(x="main_country", y='popularity', hue='main_genre',
-                    data=final_groupby, dodge=False)
+                       data=final_groupby, dodge=False)
     # barplot if the results with genre as part of the legend
     plt.xlabel('Country')
     plt.ylabel('Popularity Metric')
@@ -241,6 +244,7 @@ def popular_genre_by_country(raw_data):
     fig.savefig("most_popular_genre_pop.png")
     return final_groupby
 
+
 def find_valuable_cast(joint_df):
     """
 
@@ -249,23 +253,34 @@ def find_valuable_cast(joint_df):
     data_directors = data_directors.copy()
     data_directors['directors'] = data_directors['directors'].str.split(',')
     data_directors = data_directors.explode('directors')
-    data_directors['directors'] = data_directors['directors'].str.strip() 
-    data_directors_revenue = data_directors.sort_values('revenue', ascending=False).drop_duplicates('directors',keep='first').head(10)
+    data_directors['directors'] = data_directors['directors'].str.strip()
+    data_directors_revenue = (data_directors
+                              .sort_values('revenue', ascending=False)
+                              .drop_duplicates('directors', keep='first')
+                              .head(10))
     sns.set()
-    plt.figure(figsize=(18,12))
-    barplot_directors = sns.barplot(x=data_directors_revenue['revenue'], y=data_directors_revenue['directors'], palette='viridis')
-    barplot_directors.set_title('Top 10 Most Profitable Directors Of All Time', fontsize=18, weight='bold')
+    plt.figure(figsize=(18, 12))
+    barplot_directors = sns.barplot(x=data_directors_revenue['revenue'],
+                                    y=data_directors_revenue['directors'],
+                                    palette='viridis')
+    barplot_directors.set_title(
+        'Top 10 Most Profitable Directors Of All Time', fontsize=18, weight='bold')
     barplot_directors.set_xlabel('Revenue in USD', fontsize=18, weight='bold')
     barplot_directors.set_ylabel('Directors', fontsize=18, weight='bold')
     plt.savefig('valuable_directors.png')
     return data_directors_revenue
 
+
 def join_tables(tomatoes_df, tmdb_df):
+    """
+
+    """
     tomatoes_df = tomatoes_df[['movie_title', 'directors']]
-    tmdb_df = tmdb_df[['budget', 'revenue', 'title', 'vote_average', 'vote_count']]
-    return tomatoes_df.merge(tmdb_df, left_on='movie_title', right_on= 'title', how='left').dropna()
+    tmdb_df = tmdb_df[['budget', 'revenue',
+                       'title', 'vote_average', 'vote_count']]
+    return tomatoes_df.merge(tmdb_df, left_on='movie_title',
+                             right_on='title', how='left').dropna()
 
 
 if __name__ == "__main__":
     main()
-
