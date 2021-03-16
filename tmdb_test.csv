@@ -1,0 +1,7 @@
+popularity,genres,production_countries
+50,"[{""id"": 28, ""name"": ""Action""}, {""id"": 878, ""name"": ""Science Fiction""}]","[{""iso_3166_1"": ""US"", ""name"": ""United States of America""},{""iso_3166_1"": ""JP"", ""name"": ""Japan""}]"
+100,"[{""id"": 28, ""name"": ""Action""}, {""id"": 878, ""name"": ""Science Fiction""}]","[{""iso_3166_1"": ""US"", ""name"": ""United States of America""}]"
+450,"[{""id"": 28, ""name"": ""Action""}]","[{""iso_3166_1"": ""US"", ""name"": ""United States of America""}]"
+100,"[{""id"": 28, ""name"": ""Drama""}]","[{""iso_3166_1"": ""JP"", ""name"": ""Japan""}]"
+
+
