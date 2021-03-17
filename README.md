@@ -6,7 +6,10 @@ We analyse the revenue, director, rating and genre for each movie and make a det
 
 ## Setup
 
-This project is written completely in Python code, you can execute this project either on Ed CSE 163 workspace or other environments that can execute Python code such as Visual Studio Code or Jupiter Notebook. You can run the command `python main.py` on the terminal to run the main file of our project. Our code also uses **pandas**, **matplotlib**, **seaborn** installation and set up for these libraries must be ensured. 
+This project is written completely in Python code, you can execute this project either on Ed CSE 163 workspace or other environments that can execute Python code such as Visual Studio Code or Jupiter Notebook. You can run the command `python main.py` on the terminal to run the main file of our project. Our code also uses **pandas**, **matplotlib**, **seaborn** installation and set up for these libraries must be ensured.
+
+## Run
+The `main.py` will first run the test of every functionality we made it for each research question. After passing all th unit tests. It will start to plot the figures of each research question. As for the **recommendation system** is rely on two dataset, including the main dataset `tomatoes_movies_csv` and the result from top 10 directors. We also make a example by searching for 'Avatar'. It will first look up the keyword by finding the most similary movie in the database, and finally print out all recommended movies.
 
 ## Machine Learning Library
 
