@@ -15,6 +15,7 @@ To build the recommendation sytem, you will need extra library including **sklea
 
 ## Datasets
 
-The **TMDB dataset** is too large to be displayed on github but can be found here: https://www.kaggle.com/tmdb/tmdb-movie-metadata/ and the **rotten tomatoes dataset** can be found here: https://www.kaggle.com/stefanoleone992/rotten-tomatoes-movies-and-critic-reviews-dataset?select=rotten_tomatoes_movies.csv 
+The **TMDB dataset** is too large to be displayed on github but can be found here: https://www.kaggle.com/tmdb/tmdb-movie-metadata/ 
+and the **rotten tomatoes dataset** can be found here: https://www.kaggle.com/stefanoleone992/rotten-tomatoes-movies-and-critic-reviews-dataset?select=rotten_tomatoes_movies.csv 
 
 
