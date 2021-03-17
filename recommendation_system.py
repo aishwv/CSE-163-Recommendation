@@ -17,8 +17,8 @@ class Recommendation_System:
         future recommendation. Including similarity matrix
         and research result from "movie_analysis" module
         '''
-        movies = data[['movie_title', 'genres', 
-                       'directors', 'actors', 
+        movies = data[['movie_title', 'genres',
+                       'directors', 'actors',
                        'production_company']]
 
         movies = movies.fillna("")
@@ -69,7 +69,7 @@ class Recommendation_System:
         if len(match_tuple) == 0:
             return
         else:
-            print(f'Found possible matches in our movies Library:' +
+            print('Found possible matches in our movies Library:' +
                   f'{[x[0] for x in match_tuple]}\n')
             return (match_tuple[0][0], match_tuple[0][1])
 
@@ -111,8 +111,7 @@ class Recommendation_System:
                     score += 1
 
             movies_list.append((movie_name, score))
-        movies_list.sort(key=lambda x : x[1], reverse=True)
+        movies_list.sort(key=lambda x: x[1], reverse=True)
 
         for movie, score in movies_list:
-            print(f'Movie: {movie}, score {score}')
-
+            print(f'Movie: {movie}, Score: {score}')

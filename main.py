@@ -72,7 +72,7 @@ def test_find_average_runtime_each_genre(data):
 
 def test_popular_genre_by_country(data):
     '''
-    test the function "popular_genre_by_country" 
+    test the function "popular_genre_by_country"
     '''
 
     result = popular_genre_by_country(data)
@@ -90,7 +90,7 @@ def test_popular_genre_by_country(data):
 
 def test_find_valuable_cast(data):
     '''
-    test the function "find_valuable_cast" 
+    test the function "find_valuable_cast"
     '''
     result = find_valuable_cast(data)
 
@@ -114,27 +114,35 @@ def critics_vs_audience(raw_data):
     Plot the scatter figure of the ciritcs and audience and returns
     a dataframe with genre, critic ratings and audience rating.
     '''
+    # selecting the columns necessary for our problem
     data = raw_data[['genres', 'tomatometer_rating', 'audience_rating']]
+
+    # getting the list of genres and storing it in the genre column
     new_data = data.copy()
     new_data['genres'] = new_data['genres'].str.split(',')
     new_data = new_data.explode('genres')
     new_data['genres'] = new_data['genres'].str.strip()
+
+    # grouping each genre and finding the mean for the same
     new_data = new_data.groupby(['genres']).mean()
     new_data = new_data.reset_index()
+
+    # creating a barplot visualization for each genre on the y axis
+    # and revenue on the x axis
     sns.set()
     scatter_plot = sns.relplot(data=new_data, x="tomatometer_rating",
                                y="audience_rating",
                                kind='scatter', hue='genres',
                                s=100, style='genres',
                                height=10)
-
     plt.title('Genres Critics Average Rating' +
               'vs. Audience Average Rating',
               weight='bold')
     scatter_plot.set(xlabel='Critics Rating', ylabel='Audience Rating')
-
     plt.plot(range(0, 100), range(0, 100), 'black', alpha=0.2)
     plt.savefig('critics_vs_audience.png', bbox_inches='tight')
+
+    # returns dataframe of genres and their mean critics and audience rating
     return new_data
 
 
@@ -247,37 +255,56 @@ def popular_genre_by_country(raw_data):
 
 def find_valuable_cast(joint_df):
     """
-
+    Given the joint dataset of rotten tomatoes and TMDB dataset,
+    this function finds the top 10 most profitable directors of
+    all time and creates a barplot visualization for the same
+    while returning the dataframe of directors that make the most
+    revenue
     """
+    # selecting necessary columns for our problem
     data_directors = joint_df[['directors', 'revenue']]
+
+    # making a list of directors and stores it as the 'directors' column
     data_directors = data_directors.copy()
     data_directors['directors'] = data_directors['directors'].str.split(',')
     data_directors = data_directors.explode('directors')
     data_directors['directors'] = data_directors['directors'].str.strip()
+
+    # arranging revenue values in descending order and selects top 10
     data_directors_revenue = (data_directors
                               .sort_values('revenue', ascending=False)
                               .drop_duplicates('directors', keep='first')
                               .head(10))
+
+    # creating a barplot of top 10 directors with x axis revenue and
+    # y axis directors
     sns.set()
     plt.figure(figsize=(18, 12))
     barplot_directors = sns.barplot(x=data_directors_revenue['revenue'],
                                     y=data_directors_revenue['directors'],
                                     palette='viridis')
-    barplot_directors.set_title(
-        'Top 10 Most Profitable Directors Of All Time', fontsize=18, weight='bold')
-    barplot_directors.set_xlabel('Revenue in USD', fontsize=18, weight='bold')
+    barplot_directors.set_title('Top 10 Most Profitable Directors\
+        Of All Time', fontsize=18, weight='bold')
+    barplot_directors.set_xlabel('Revenue in USD (in\
+        billions)', fontsize=18, weight='bold')
     barplot_directors.set_ylabel('Directors', fontsize=18, weight='bold')
     plt.savefig('valuable_directors.png')
+
+    # returns dataframe with top 10 directors and their revenue
     return data_directors_revenue
 
 
 def join_tables(tomatoes_df, tmdb_df):
     """
-
+    Takes TMDB and rotten tomatoes dataframes and joins
+    the two dataframes and returns the joint dataframe
     """
+    # selecting necessary columns for our problems
     tomatoes_df = tomatoes_df[['movie_title', 'directors']]
     tmdb_df = tmdb_df[['budget', 'revenue',
                        'title', 'vote_average', 'vote_count']]
+
+    # creates and returns a joint dataset
     return tomatoes_df.merge(tmdb_df, left_on='movie_title',
                              right_on='title', how='left').dropna()
 
