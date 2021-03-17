@@ -28,9 +28,9 @@ def main():
 
     # plot all research figure and get result
     print("start to plot.................")
+    popular_genre_by_country(tmdb_df)
     critics_vs_audience(tomatoes_df)
     find_average_runtime_each_genre(tomatoes_df)
-    popular_genre_by_country(tmdb_df)
     top_10_directors = find_valuable_cast(joint_table_df)
 
     print('start to build the recommendation system.......')
@@ -42,7 +42,7 @@ def test_critcs_vs_audience(data):
     """
     test the function "critics_vs_audience"
     """
-    result = critics_vs_audience(data)
+    result = critics_vs_audience(data, True)
 
     # test classics movie
     row_data = result.query('genres == "Classics"')
@@ -59,7 +59,7 @@ def test_find_average_runtime_each_genre(data):
     '''
     test the function "find_average_runtime_each_genre"
     '''
-    result = find_average_runtime_each_genre(data)
+    result = find_average_runtime_each_genre(data, True)
 
     # # test classics movie
     row_data = result.query('genres == "Classics"')
@@ -75,7 +75,7 @@ def test_popular_genre_by_country(data):
     test the function "popular_genre_by_country"
     '''
 
-    result = popular_genre_by_country(data)
+    result = popular_genre_by_country(data, True)
 
     # test country United States
     row_data = result.query('main_country == "United States of America"')
@@ -92,7 +92,7 @@ def test_find_valuable_cast(data):
     '''
     test the function "find_valuable_cast"
     '''
-    result = find_valuable_cast(data)
+    result = find_valuable_cast(data, True)
 
     # test one director (made up)
     row_data = result.query('directors == "Aishwarya Venkatesh"')
@@ -108,7 +108,7 @@ def read_data(path):
         return pd.read_csv(path)
 
 
-def critics_vs_audience(raw_data):
+def critics_vs_audience(raw_data, is_test=False):
     '''
     Given data, compare the genre ratings of audience and critics.
     Plot the scatter figure of the ciritcs and audience and returns
@@ -129,24 +129,25 @@ def critics_vs_audience(raw_data):
 
     # creating a barplot visualization for each genre on the y axis
     # and revenue on the x axis
-    sns.set()
-    scatter_plot = sns.relplot(data=new_data, x="tomatometer_rating",
-                               y="audience_rating",
-                               kind='scatter', hue='genres',
-                               s=100, style='genres',
-                               height=10)
-    plt.title('Genres Critics Average Rating' +
-              'vs. Audience Average Rating',
-              weight='bold')
-    scatter_plot.set(xlabel='Critics Rating', ylabel='Audience Rating')
-    plt.plot(range(0, 100), range(0, 100), 'black', alpha=0.2)
-    plt.savefig('critics_vs_audience.png', bbox_inches='tight')
+    if not is_test:
+        sns.set()
+        scatter_plot = sns.relplot(data=new_data, x="tomatometer_rating",
+                                   y="audience_rating",
+                                   kind='scatter', hue='genres',
+                                   s=100, style='genres',
+                                   height=10)
+        plt.title('Genres Critics Average Rating' +
+                  'vs. Audience Average Rating',
+                  weight='bold')
+        scatter_plot.set(xlabel='Critics Rating', ylabel='Audience Rating')
+        plt.plot(range(0, 100), range(0, 100), 'black', alpha=0.2)
+        plt.savefig('critics_vs_audience.png', bbox_inches='tight')
 
     # returns dataframe of genres and their mean critics and audience rating
     return new_data
 
 
-def find_average_runtime_each_genre(raw_data):
+def find_average_runtime_each_genre(raw_data, is_test=False):
     """
     Given a data frame find the average movie length from
     2000 to present. Plot the figure and returns the
@@ -168,22 +169,23 @@ def find_average_runtime_each_genre(raw_data):
     recent_movie['genres'] = recent_movie['genres'].str.strip()
 
     # step 3: plot the figure
-    sns.set()
-    plt.figure(figsize=(18, 12))
-    barplot = sns.barplot(x='runtime', y='genres',
-                          palette='magma', ci=50,
-                          data=recent_movie)
-    barplot.set_title('Average Movie Duration from 2000 to Present',
-                      fontsize=18,
-                      weight='bold')
-    barplot.set_xlabel('Movie Duration', fontsize=18, weight='bold')
-    barplot.set_ylabel('Genres', fontsize=18, weight='bold')
-    plt.savefig('average_runtime_each_genre.png')
+    if not is_test:
+        sns.set()
+        plt.figure(figsize=(18, 12))
+        barplot = sns.barplot(x='runtime', y='genres',
+                              palette='magma', ci=50,
+                              data=recent_movie)
+        barplot.set_title('Average Movie Duration from 2000 to Present',
+                          fontsize=18,
+                          weight='bold')
+        barplot.set_xlabel('Movie Duration', fontsize=18, weight='bold')
+        barplot.set_ylabel('Genres', fontsize=18, weight='bold')
+        plt.savefig('average_runtime_each_genre.png')
 
     return recent_movie.groupby('genres').describe()
 
 
-def popular_genre_by_country(raw_data):
+def popular_genre_by_country(raw_data, is_test=False):
     """
     This takes the tmdb 5000 movies dataset
     and finds the most popular movie genre in
@@ -239,21 +241,21 @@ def popular_genre_by_country(raw_data):
     final_groupby = groupby.groupby('main_country').head(1)
     # gets most popular genre for each country
     final_groupby = final_groupby.nlargest(20, ['popularity'])
-    plot = sns.barplot(x="main_country", y='popularity', hue='main_genre',
-                       data=final_groupby, dodge=False)
-    # barplot if the results with genre as part of the legend
-    plt.xlabel('Country')
-    plt.ylabel('Popularity Metric')
-    plot.set_xticklabels(plot.get_xticklabels(), rotation=90)
-    plt.title("Most Popular Genre in Each Country")
-    plt.legend(bbox_to_anchor=(.75, 1), loc=2, borderaxespad=0.)
-    plt.gcf().subplots_adjust(bottom=0.15)
-    fig = plot.get_figure()
-    fig.savefig("most_popular_genre_pop.png")
+    if not is_test:
+        plot = sns.barplot(x="main_country", y='popularity', hue='main_genre',
+                           data=final_groupby, dodge=False)
+        # barplot if the results with genre as part of the legend
+        plt.xlabel('Country')
+        plt.ylabel('Popularity Metric')
+        plot.set_xticklabels(plot.get_xticklabels(), rotation=90)
+        plt.title("Most Popular Genre in Each Country")
+        plt.legend(bbox_to_anchor=(.75, 1), loc=2, borderaxespad=0.)
+        plt.gcf().subplots_adjust(bottom=0.15)
+        plt.savefig("most_popular_genre_pop.png")
     return final_groupby
 
 
-def find_valuable_cast(joint_df):
+def find_valuable_cast(joint_df, is_test=False):
     """
     Given the joint dataset of rotten tomatoes and TMDB dataset,
     this function finds the top 10 most profitable directors of
@@ -278,17 +280,18 @@ def find_valuable_cast(joint_df):
 
     # creating a barplot of top 10 directors with x axis revenue and
     # y axis directors
-    sns.set()
-    plt.figure(figsize=(18, 12))
-    barplot_directors = sns.barplot(x=data_directors_revenue['revenue'],
-                                    y=data_directors_revenue['directors'],
-                                    palette='viridis')
-    barplot_directors.set_title('Top 10 Most Profitable Directors\
-        Of All Time', fontsize=18, weight='bold')
-    barplot_directors.set_xlabel('Revenue in USD (in\
-        billions)', fontsize=18, weight='bold')
-    barplot_directors.set_ylabel('Directors', fontsize=18, weight='bold')
-    plt.savefig('valuable_directors.png')
+    if not is_test:
+        sns.set()
+        plt.figure(figsize=(18, 12))
+        barplot_directors = sns.barplot(x=data_directors_revenue['revenue'],
+                                        y=data_directors_revenue['directors'],
+                                        palette='viridis')
+        barplot_directors.set_title('Top 10 Most Profitable Directors\
+            Of All Time', fontsize=18, weight='bold')
+        barplot_directors.set_xlabel('Revenue in USD (in\
+            billions)', fontsize=18, weight='bold')
+        barplot_directors.set_ylabel('Directors', fontsize=18, weight='bold')
+        plt.savefig('valuable_directors.png')
 
     # returns dataframe with top 10 directors and their revenue
     return data_directors_revenue
